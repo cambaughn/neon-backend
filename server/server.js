@@ -11,12 +11,19 @@ const port = 1337;
 app.use(bodyParser.json());
 app.use(cors());
 
-// CORS
-app.use((request, response, next) => {
-  response.header("Access-Control-Allow-Origin", "*");
-  response.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  next();
+const jwtCheck = jwt({
+  secret: jwks.expressJwtSecret({
+        cache: true,
+        rateLimit: true,
+        jwksRequestsPerMinute: 5,
+        jwksUri: "https://neon-app.auth0.com/.well-known/jwks.json"
+    }),
+    audience: 'http://neonbeta.com/',
+    issuer: "https://neon-app.auth0.com/",
+    algorithms: ['RS256']
 });
+
+app.use(jwtCheck);
 
 // ROUTES
 // app.use('/user', user);
